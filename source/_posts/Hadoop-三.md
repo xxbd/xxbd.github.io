@@ -1,7 +1,8 @@
 title: Hadoop(三)（Hdfs的上传与存储机制防止宕机）
 author: 小小冰弟
 date: 2018-02-07 18:15:26
-tags:
+tags: study
+categories: Hadoop
 ---
 
 ###### HDFS简介：HDFS主要由3个组件构成，分别是NameNode、SecondaryNameNode和DataNode，HSFS是以master/slave模式运行的，其中NameNode、SecondaryNameNode 运行在master节点，DataNode运行slave节点。
