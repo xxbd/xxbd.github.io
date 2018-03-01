@@ -94,7 +94,7 @@
 <meta property="og:site_name" content="墨">
 <meta property="og:description" content="HDFS简介：HDFS主要由3个组件构成，分别是NameNode、SecondaryNameNode和DataNode，HSFS是以master/slave模式运行的，其中NameNode、SecondaryNameNode 运行在master节点，DataNode运行slave节点。NameNode保存元信息的种类有： 文件名目录名及它们之间的层级关系 文件目录的所有者及其权限 每个文件块的名及">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-02-26T07:11:38.689Z">
+<meta property="og:updated_time" content="2018-03-01T01:17:13.589Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Hadoop(三)（Hdfs的上传与存储机制防止宕机）">
 <meta name="twitter:description" content="HDFS简介：HDFS主要由3个组件构成，分别是NameNode、SecondaryNameNode和DataNode，HSFS是以master/slave模式运行的，其中NameNode、SecondaryNameNode 运行在master节点，DataNode运行slave节点。NameNode保存元信息的种类有： 文件名目录名及它们之间的层级关系 文件目录的所有者及其权限 每个文件块的名及">
@@ -447,8 +447,8 @@ jQuery(document).ready(function($) {
 <li>客户端发送上传文件请求，通知NameNode,NameNode检查没有问题回传客户端OK.</li>
 <li>客户端开始上传文件，NameNode向edit.log文件中记录操作日志。</li>
 <li>客户端完成上传返回成功信息，NameNode便向内存中写入本次操作产生的元数据内容，方便读取。</li>
-<li>当edit.log满的时候，NameNode便会通知SecondaryNode进行checkPoint操作(为了不影响主机性能，因为转换需要消耗内存)。</li>
-<li>SN同意操作便会通知NN让其停止忘edit.log中写入日志，但不能避免还有其它上传，所以NN便会生成一个newedit.log,来替代之前的满的edit.log的工作.</li>
+<li>当edit.log满的时候，NameNode便会通知SecondaryNode进行checkPoint操作(为了不影响主机性能，重开一台服务器，因为转换需要消耗内存)。</li>
+<li>SN同意操作便会通知NN让其停止往edit.log中写入日志，但不能避免还有其它上传，所以NN便会生成一个newedit.log,来替代之前的满的edit.log的工作.</li>
 <li>接着SN下载fsimage(磁盘文件)与edit.log到本节点上进行合并操作，生成new_fsimage文件，再上传至NN上。</li>
 <li>NN替换fsimage并且删除edit.log,并且将newedit.log更名为edit.log.</li>
 </ol>
@@ -491,6 +491,10 @@ jQuery(document).ready(function($) {
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/03/01/Hadoop-四-（java客户端操作HDFS）/" rel="prev" title="Hadoop(四)（java客户端操作HDFS）">
+                Hadoop(四)（java客户端操作HDFS） <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -597,7 +601,7 @@ var jiathis_config={
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -608,7 +612,7 @@ var jiathis_config={
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
