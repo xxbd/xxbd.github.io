@@ -77,10 +77,12 @@ pagination_dir: page
 ## Themes: https://hexo.io/themes/
 theme: next
 
-# pet
+# pet  shizuku(学习少女)   
 live2d:
-  model: wanko
+  model: shizuku
   bottom: -30
+  height: 600
+  width: 400
   mobileShow: false
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
