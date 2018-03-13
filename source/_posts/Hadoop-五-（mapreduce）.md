@@ -1,8 +1,8 @@
 title: Hadoop(五)（Mapreduce的操作）
 author: 小小冰弟
-date: 2018-03-02 16:46:03
 tags: study
 categories: Hadoop
+date: 2018-03-02 16:46:03
 ---
 #### 一.Mapreduce（用来解决海量数据的运算）
 MapReduce由两个阶段组成：Map和Reduce，用户只需要实现map()和reduce()两个函数，即可实现分布式计算，非常简单。Map是对单个的运算，reduce是将他们的结果汇总。
@@ -90,7 +90,7 @@ MapReduce由两个阶段组成：Map和Reduce，用户只需要实现map()和red
         
         
 #### 五、在hadoop上运行
-    先上传目标文件
+    先要上传目标文件
     hadoop fs -put 123.txt /ppj/ (没有路径需要先创建)
     执行jar包
     hadoop jar ppj2.jar (执行方法所在的全类名，不包含,class)
