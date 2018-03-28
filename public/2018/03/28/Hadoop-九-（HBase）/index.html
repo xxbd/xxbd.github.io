@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="study," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="一、HBase&amp;nbsp;&amp;nbsp;与HDFS相比较，它是数据库，HDFS文件系统，普通文件不能支持快速读写，当你需要随机，实时读写访问便需要HBase了。另外HBase基本无事务特性，复杂的步骤也不适合，它的优势是可以hold住很大的表，几十亿行，几百万列。 二、关系型数据库相对于传统的关系型数据库，它建表时，不需要限定表中的字段，只需要指定若干个列族，插入数据时，列族中可以存储任意多个列，每">
+<meta name="keywords" content="study">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hadoop(九)（HBase）">
+<meta property="og:url" content="http://yoursite.com/2018/03/28/Hadoop-九-（HBase）/index.html">
+<meta property="og:site_name" content="墨">
+<meta property="og:description" content="一、HBase&amp;nbsp;&amp;nbsp;与HDFS相比较，它是数据库，HDFS文件系统，普通文件不能支持快速读写，当你需要随机，实时读写访问便需要HBase了。另外HBase基本无事务特性，复杂的步骤也不适合，它的优势是可以hold住很大的表，几十亿行，几百万列。 二、关系型数据库相对于传统的关系型数据库，它建表时，不需要限定表中的字段，只需要指定若干个列族，插入数据时，列族中可以存储任意多个列，每">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-03-28T10:21:19.032Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hadoop(九)（HBase）">
+<meta name="twitter:description" content="一、HBase&amp;nbsp;&amp;nbsp;与HDFS相比较，它是数据库，HDFS文件系统，普通文件不能支持快速读写，当你需要随机，实时读写访问便需要HBase了。另外HBase基本无事务特性，复杂的步骤也不适合，它的优势是可以hold住很大的表，几十亿行，几百万列。 二、关系型数据库相对于传统的关系型数据库，它建表时，不需要限定表中的字段，只需要指定若干个列族，插入数据时，列族中可以存储任意多个列，每">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  (function(){
+        if(''){
+            if (prompt('请输入文章密码') !== ''){
+                alert('密码错误！');
+                history.back();
+            }
+        }
+    })();
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/03/28/Hadoop-九-（HBase）/"/>
+
+
+
+
+
+  <title>Hadoop(九)（HBase） | 墨</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<div id="hexo-helper-live2d">
+  <canvas id="live2dcanvas" width="400" height="600"></canvas>
+</div>
+<style>
+  #live2dcanvas{
+    position: fixed;
+    width: 400px;
+    height: 600px;
+    opacity:0.7;
+    right: 0px;
+    z-index: 999;
+    pointer-events: none;
+    bottom: -20px;
+  }
+</style>
+<script type="text/javascript" src="/live2d/device.min.js"></script>
+<script type="text/javascript">
+const loadScript = function loadScript(c,b){var a=document.createElement("script");a.type="text/javascript";"undefined"!=typeof b&&(a.readyState?a.onreadystatechange=function(){if("loaded"==a.readyState||"complete"==a.readyState)a.onreadystatechange=null,b()}:a.onload=function(){b()});a.src=c;document.body.appendChild(a)};
+(function(){
+  if((typeof(device) != 'undefined') && (device.mobile())){
+    var trElement = document.getElementById('hexo-helper-live2d');
+    trElement.parentNode.removeChild(trElement);
+    return;
+  }else
+    if (typeof(device) === 'undefined') console.error('Cannot find current-device script.');
+  loadScript("/live2d/script.js", function(){loadlive2d("live2dcanvas", "/live2d/assets/shizuku.model.json", 0.5);});
+})();
+</script>
+
+<script type="text/javascript">
+/* 鼠标特效 */
+var a_idx = 0;
+jQuery(document).ready(function($) {
+    $("body").click(function(e) {
+        var a = new Array("富强", "民主", "文明", "和谐", "自由", "平等", "公正" ,"法治", "爱国", "敬业", "诚信", "友善");
+        var $i = $("<span/>").text(a[a_idx]);
+        a_idx = (a_idx + 1) % a.length;
+        var x = e.pageX,
+        y = e.pageY;
+        $i.css({
+            "z-index": 999999999999999999999999999999999999999999999999999999999999999999999,
+            "top": y - 20,
+            "left": x,
+            "position": "absolute",
+            "font-weight": "bold",
+            "color": "#ff6651"
+        });
+        $("body").append($i);
+        $i.animate({
+            "top": y - 180,
+            "opacity": 0
+        },
+        1500,
+        function() {
+            $i.remove();
+        });
+    });
+});
+</script>
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+	<a href="https://github.com/xxbd" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">墨</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-neggings">
+          <a href="/neggings" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            neggings
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/03/28/Hadoop-九-（HBase）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="小小冰弟">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/tl.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Hadoop(九)（HBase）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-28T17:43:17+08:00">
+                2018-03-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Hadoop/" itemprop="url" rel="index">
+                    <span itemprop="name">Hadoop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="一、HBase"><a href="#一、HBase" class="headerlink" title="一、HBase"></a>一、HBase</h4><p>&nbsp;&nbsp;与HDFS相比较，它是数据库，HDFS文件系统，普通文件不能支持快速读写，当你需要随机，实时读写访问便需要HBase了。另外HBase基本无事务特性，复杂的步骤也不适合，它的优势是可以hold住很大的表，几十亿行，几百万列。</p>
+<h4 id="二、关系型数据库"><a href="#二、关系型数据库" class="headerlink" title="二、关系型数据库"></a>二、关系型数据库</h4><p>相对于传统的关系型数据库，它建表时，不需要限定表中的字段，只需要指定若干个列族，插入数据时，列族中可以存储任意多个列，每一行有个唯一的行键，当要查询某一字段的值时（成为cell），需要指定坐标，表名&gt;行键&gt;列名&gt;版本号（一个value可以有多个版本号，通过版本号区分）</p>
+<h4 id="三、Hbase集群"><a href="#三、Hbase集群" class="headerlink" title="三、Hbase集群"></a>三、Hbase集群</h4><p>每一个表在HBase中会被按照行键拆分，比如1~10000，10001~20000这样，每一个称为一个region,region存在region server上面，region的底层文件还是存在HDFS上面，众多的region server需要一个协调者，HMaser不负责存储数据，管理region server.</p>
+<p>这里你会疑问，那么多的region,它怎么找到呢？先将1~10000，10001~20000，20001~30000，30001~40000的位置存放在META表中，分为1<del>20000，20001</del>40000两份，然后再合并为1~~~~40000存放在Root表上，而Root表放在Zookeeper上存储</p>
+<h4 id="四、HBase命令行使用"><a href="#四、HBase命令行使用" class="headerlink" title="四、HBase命令行使用"></a>四、HBase命令行使用</h4><pre><code>进入hbase命令行
+./hbase shell
+
+显示hbase中的表
+list
+
+创建user表，包含info、data两个列族
+create &apos;user&apos;, &apos;info1&apos;, &apos;data1&apos;
+create &apos;user&apos;, {NAME =&gt; &apos;info&apos;, VERSIONS =&gt; &apos;3&apos;}
+
+向user表中插入信息，row key为rk0001，列族info中添加name列标示符，值为zhangsan
+put &apos;user&apos;, &apos;rk0001&apos;, &apos;info:name&apos;, &apos;zhangsan&apos;
+
+向user表中插入信息，row key为rk0001，列族info中添加gender列标示符，值为female
+put &apos;user&apos;, &apos;rk0001&apos;, &apos;info:gender&apos;, &apos;female&apos;
+
+向user表中插入信息，row key为rk0001，列族info中添加age列标示符，值为20
+put &apos;user&apos;, &apos;rk0001&apos;, &apos;info:age&apos;, 20
+
+向user表中插入信息，row key为rk0001，列族data中添加pic列标示符，值为picture
+put &apos;user&apos;, &apos;rk0001&apos;, &apos;data:pic&apos;, &apos;picture&apos;
+
+获取user表中row key为rk0001的所有信息
+get &apos;user&apos;, &apos;rk0001&apos;
+
+获取user表中row key为rk0001，info列族的所有信息
+get &apos;user&apos;, &apos;rk0001&apos;, &apos;info&apos;
+
+获取user表中row key为rk0001，info列族的name、age列标示符的信息
+get &apos;user&apos;, &apos;rk0001&apos;, &apos;info:name&apos;, &apos;info:age&apos;
+
+获取user表中row key为rk0001，info、data列族的信息
+get &apos;user&apos;, &apos;rk0001&apos;, &apos;info&apos;, &apos;data&apos;
+get &apos;user&apos;, &apos;rk0001&apos;, {COLUMN =&gt; [&apos;info&apos;, &apos;data&apos;]}
+
+get &apos;user&apos;, &apos;rk0001&apos;, {COLUMN =&gt; [&apos;info:name&apos;, &apos;data:pic&apos;]}
+
+获取user表中row key为rk0001，列族为info，版本号最新5个的信息
+get &apos;user&apos;, &apos;rk0001&apos;, {COLUMN =&gt; &apos;info&apos;, VERSIONS =&gt; 2}
+get &apos;user&apos;, &apos;rk0001&apos;, {COLUMN =&gt; &apos;info:name&apos;, VERSIONS =&gt; 5}
+get &apos;user&apos;, &apos;rk0001&apos;, {COLUMN =&gt; &apos;info:name&apos;, VERSIONS =&gt; 5, TIMERANGE =&gt; [1392368783980, 1392380169184]}
+
+获取user表中row key为rk0001，cell的值为zhangsan的信息
+get &apos;people&apos;, &apos;rk0001&apos;, {FILTER =&gt; &quot;ValueFilter(=, &apos;binary:图片&apos;)&quot;}
+
+获取user表中row key为rk0001，列标示符中含有a的信息
+get &apos;people&apos;, &apos;rk0001&apos;, {FILTER =&gt; &quot;(QualifierFilter(=,&apos;substring:a&apos;))&quot;}
+
+put &apos;user&apos;, &apos;rk0002&apos;, &apos;info:name&apos;, &apos;fanbingbing&apos;
+put &apos;user&apos;, &apos;rk0002&apos;, &apos;info:gender&apos;, &apos;female&apos;
+put &apos;user&apos;, &apos;rk0002&apos;, &apos;info:nationality&apos;, &apos;中国&apos;
+get &apos;user&apos;, &apos;rk0002&apos;, {FILTER =&gt; &quot;ValueFilter(=, &apos;binary:中国&apos;)&quot;}
+
+
+查询user表中的所有信息
+scan &apos;user&apos;
+
+查询user表中列族为info的信息
+scan &apos;user&apos;, {COLUMNS =&gt; &apos;info&apos;}
+scan &apos;user&apos;, {COLUMNS =&gt; &apos;info&apos;, RAW =&gt; true, VERSIONS =&gt; 5}
+scan &apos;persion&apos;, {COLUMNS =&gt; &apos;info&apos;, RAW =&gt; true, VERSIONS =&gt; 3}
+查询user表中列族为info和data的信息
+scan &apos;user&apos;, {COLUMNS =&gt; [&apos;info&apos;, &apos;data&apos;]}
+scan &apos;user&apos;, {COLUMNS =&gt; [&apos;info:name&apos;, &apos;data:pic&apos;]}
+
+
+查询user表中列族为info、列标示符为name的信息
+scan &apos;user&apos;, {COLUMNS =&gt; &apos;info:name&apos;}
+
+查询user表中列族为info、列标示符为name的信息,并且版本最新的5个
+scan &apos;user&apos;, {COLUMNS =&gt; &apos;info:name&apos;, VERSIONS =&gt; 5}
+
+查询user表中列族为info和data且列标示符中含有a字符的信息
+scan &apos;user&apos;, {COLUMNS =&gt; [&apos;info&apos;, &apos;data&apos;], FILTER =&gt; &quot;(QualifierFilter(=,&apos;substring:a&apos;))&quot;}
+
+查询user表中列族为info，rk范围是[rk0001, rk0003)的数据
+scan &apos;people&apos;, {COLUMNS =&gt; &apos;info&apos;, STARTROW =&gt; &apos;rk0001&apos;, ENDROW =&gt; &apos;rk0003&apos;}
+
+查询user表中row key以rk字符开头的
+scan &apos;user&apos;,{FILTER=&gt;&quot;PrefixFilter(&apos;rk&apos;)&quot;}
+
+查询user表中指定范围的数据
+scan &apos;user&apos;, {TIMERANGE =&gt; [1392368783980, 1392380169184]}
+
+删除数据
+删除user表row key为rk0001，列标示符为info:name的数据
+delete &apos;people&apos;, &apos;rk0001&apos;, &apos;info:name&apos;
+删除user表row key为rk0001，列标示符为info:name，timestamp为1392383705316的数据
+delete &apos;user&apos;, &apos;rk0001&apos;, &apos;info:name&apos;, 1392383705316
+
+
+清空user表中的数据
+truncate &apos;people&apos;
+
+
+修改表结构
+首先停用user表（新版本不用）
+disable &apos;user&apos;
+
+添加两个列族f1和f2
+alter &apos;people&apos;, NAME =&gt; &apos;f1&apos;
+alter &apos;user&apos;, NAME =&gt; &apos;f2&apos;
+启用表
+enable &apos;user&apos;
+
+
+###disable &apos;user&apos;(新版本不用)
+删除一个列族：
+alter &apos;user&apos;, NAME =&gt; &apos;f1&apos;, METHOD =&gt; &apos;delete&apos; 或 alter &apos;user&apos;, &apos;delete&apos; =&gt; &apos;f1&apos;
+
+添加列族f1同时删除列族f2
+alter &apos;user&apos;, {NAME =&gt; &apos;f1&apos;}, {NAME =&gt; &apos;f2&apos;, METHOD =&gt; &apos;delete&apos;}
+
+将user表的f1列族版本号改为5
+alter &apos;people&apos;, NAME =&gt; &apos;info&apos;, VERSIONS =&gt; 5
+启用表
+enable &apos;user&apos;
+
+
+删除表
+disable &apos;user&apos;
+drop &apos;user&apos;
+
+
+get &apos;person&apos;, &apos;rk0001&apos;, {FILTER =&gt; &quot;ValueFilter(=, &apos;binary:中国&apos;)&quot;}
+get &apos;person&apos;, &apos;rk0001&apos;, {FILTER =&gt; &quot;(QualifierFilter(=,&apos;substring:a&apos;))&quot;}
+scan &apos;person&apos;, {COLUMNS =&gt; &apos;info:name&apos;}
+scan &apos;person&apos;, {COLUMNS =&gt; [&apos;info&apos;, &apos;data&apos;], FILTER =&gt; &quot;(QualifierFilter(=,&apos;substring:a&apos;))&quot;}
+scan &apos;person&apos;, {COLUMNS =&gt; &apos;info&apos;, STARTROW =&gt; &apos;rk0001&apos;, ENDROW =&gt; &apos;rk0003&apos;}
+
+scan &apos;person&apos;, {COLUMNS =&gt; &apos;info&apos;, STARTROW =&gt; &apos;20140201&apos;, ENDROW =&gt; &apos;20140301&apos;}
+scan &apos;person&apos;, {COLUMNS =&gt; &apos;info:name&apos;, TIMERANGE =&gt; [1395978233636, 1395987769587]}
+delete &apos;person&apos;, &apos;rk0001&apos;, &apos;info:name&apos;
+
+alter &apos;person&apos;, NAME =&gt; &apos;ffff&apos;
+alter &apos;person&apos;, NAME =&gt; &apos;info&apos;, VERSIONS =&gt; 10
+
+
+get &apos;user&apos;, &apos;rk0002&apos;, {COLUMN =&gt; [&apos;info:name&apos;, &apos;data:pic&apos;]}
+</code></pre><h4 id="五、搭建HBase集群"><a href="#五、搭建HBase集群" class="headerlink" title="五、搭建HBase集群"></a>五、搭建HBase集群</h4><p>1.上传hbase安装包</p>
+<p>2.解压</p>
+<p>3.配置hbase集群，要修改3个文件（首先zk集群已经安装好了）<br>    注意：要把hadoop的hdfs-site.xml和core-site.xml 放到hbase/conf下</p>
+<pre><code>3.1修改hbase-env.sh
+export JAVA_HOME=/usr/java/jdk1.7.0_55
+//告诉hbase使用外部的zk
+export HBASE_MANAGES_ZK=false
+
+vim hbase-site.xml
+&lt;configuration&gt;
+    &lt;!-- 指定hbase在HDFS上存储的路径 --&gt;
+    &lt;property&gt;
+            &lt;name&gt;hbase.rootdir&lt;/name&gt;
+            &lt;value&gt;hdfs://ns1/hbase&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;!-- 指定hbase是分布式的 --&gt;
+    &lt;property&gt;
+            &lt;name&gt;hbase.cluster.distributed&lt;/name&gt;
+            &lt;value&gt;true&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;!-- 指定zk的地址，多个用“,”分割 --&gt;
+    &lt;property&gt;
+            &lt;name&gt;hbase.zookeeper.quorum&lt;/name&gt;
+            &lt;value&gt;hadoop05:2181,hadoop06:2181,hadoop07:2181&lt;/value&gt;
+    &lt;/property&gt;
+&lt;/configuration&gt;
+
+vim regionservers
+hadoop03
+hadoop04
+hadoop05
+hadoop06
+
+3.2拷贝hbase到其他节点
+    scp -r /weekend/hbase-0.96.2-hadoop2/ hadoop02:/weekend/
+    scp -r /weekend/hbase-0.96.2-hadoop2/ hadoop03:/weekend/
+    scp -r /weekend/hbase-0.96.2-hadoop2/ hadoop04:/weekend/
+    scp -r /weekend/hbase-0.96.2-hadoop2/ hadoop05:/weekend/
+    scp -r /weekend/hbase-0.96.2-hadoop2/ hadoop06:/weekend/
+</code></pre><p>4.将配置好的HBase拷贝到每一个节点并同步时间。</p>
+<p>5.启动所有的hbase<br>    分别启动zk<br>        ./zkServer.sh start<br>    启动hbase集群<br>        start-dfs.sh<br>    启动hbase，在主节点上运行：<br>        start-hbase.sh<br>6.通过浏览器访问hbase管理页面<br>    192.168.1.201:60010<br>7.为保证集群的可靠性，要启动多个HMaster<br>    hbase-daemon.sh start master</p>
+<h4 id="五、HBase的API操作"><a href="#五、HBase的API操作" class="headerlink" title="五、HBase的API操作"></a>五、HBase的API操作</h4><pre><code>package cn.itcast.bigdata.hbase;
+
+
+import java.util.List;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.Cell;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.HColumnDescriptor;
+import org.apache.hadoop.hbase.HTableDescriptor;
+import org.apache.hadoop.hbase.KeyValue;
+import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.Delete;
+import org.apache.hadoop.hbase.client.Get;
+import org.apache.hadoop.hbase.client.HBaseAdmin;
+import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.ResultScanner;
+import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.filter.BinaryComparator;
+import org.apache.hadoop.hbase.filter.BinaryPrefixComparator;
+import org.apache.hadoop.hbase.filter.ByteArrayComparable;
+import org.apache.hadoop.hbase.filter.ColumnPrefixFilter;
+import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
+import org.apache.hadoop.hbase.filter.FamilyFilter;
+import org.apache.hadoop.hbase.filter.Filter;
+import org.apache.hadoop.hbase.filter.MultipleColumnPrefixFilter;
+import org.apache.hadoop.hbase.filter.PrefixFilter;
+import org.apache.hadoop.hbase.filter.QualifierFilter;
+import org.apache.hadoop.hbase.filter.RegexStringComparator;
+import org.apache.hadoop.hbase.filter.RowFilter;
+import org.apache.hadoop.hbase.filter.SingleColumnValueFilter;
+import org.apache.hadoop.hbase.filter.SubstringComparator;
+import org.apache.hadoop.hbase.master.TableNamespaceManager;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.junit.Before;
+import org.junit.Test;
+
+public class HbaseDemo {
+
+private Configuration conf = null;
+
+@Before
+public void init(){
+    conf = HBaseConfiguration.create();
+    conf.set(&quot;hbase.zookeeper.quorum&quot;, &quot;hadoop05,hadoop06,hadoop07&quot;);
+}
+
+@Test
+public void testDrop() throws Exception{
+    HBaseAdmin admin = new HBaseAdmin(conf);
+    admin.disableTable(&quot;account&quot;);
+    admin.deleteTable(&quot;account&quot;);
+    admin.close();
+}
+
+@Test
+public void testPut() throws Exception{
+    HTable table = new HTable(conf, &quot;person_info&quot;);
+    Put p = new Put(Bytes.toBytes(&quot;person_rk_bj_zhang_000002&quot;));
+    p.add(&quot;base_info&quot;.getBytes(), &quot;name&quot;.getBytes(), &quot;zhangwuji&quot;.getBytes());
+    table.put(p);
+    table.close();
+}
+
+@Test
+public void testGet() throws Exception{
+    HTable table = new HTable(conf, &quot;person_info&quot;);
+    Get get = new Get(Bytes.toBytes(&quot;person_rk_bj_zhang_000001&quot;));
+    get.setMaxVersions(5);
+    Result result = table.get(get);
+    List&lt;Cell&gt; cells = result.listCells();
+
+   //result.getValue(family, qualifier);  可以从result中直接取出一个特定的value
+
+    //遍历出result中所有的键值对
+    for(KeyValue kv : result.list()){
+        String family = new String(kv.getFamily());
+        System.out.println(family);
+        String qualifier = new String(kv.getQualifier());
+        System.out.println(qualifier);
+        System.out.println(new String(kv.getValue()));
+
+    }
+    table.close();
+}
+
+/**
+ * 多种过滤条件的使用方法
+ * @throws Exception
+ */
+@Test
+public void testScan() throws Exception{
+    HTable table = new HTable(conf, &quot;person_info&quot;.getBytes());
+    Scan scan = new Scan(Bytes.toBytes(&quot;person_rk_bj_zhang_000001&quot;), Bytes.toBytes(&quot;person_rk_bj_zhang_000002&quot;));
+
+    //前缀过滤器----针对行键
+    Filter filter = new PrefixFilter(Bytes.toBytes(&quot;rk&quot;));
+
+    //行过滤器
+    ByteArrayComparable rowComparator = new BinaryComparator(Bytes.toBytes(&quot;person_rk_bj_zhang_000001&quot;));
+    RowFilter rf = new RowFilter(CompareOp.LESS_OR_EQUAL, rowComparator);
+
+    /**
+     * 假设rowkey格式为：创建日期_发布日期_ID_TITLE
+     * 目标：查找  发布日期  为  2014-12-21  的数据
+     */
+    rf = new RowFilter(CompareOp.EQUAL , new SubstringComparator(&quot;_2014-12-21_&quot;));
+
+
+    //单值过滤器 1 完整匹配字节数组
+    new SingleColumnValueFilter(&quot;base_info&quot;.getBytes(), &quot;name&quot;.getBytes(), CompareOp.EQUAL, &quot;zhangsan&quot;.getBytes());
+    //单值过滤器2 匹配正则表达式
+    ByteArrayComparable comparator = new RegexStringComparator(&quot;zhang.&quot;);
+    new SingleColumnValueFilter(&quot;info&quot;.getBytes(), &quot;NAME&quot;.getBytes(), CompareOp.EQUAL, comparator);
+
+    //单值过滤器2 匹配是否包含子串,大小写不敏感
+    comparator = new SubstringComparator(&quot;wu&quot;);
+    new SingleColumnValueFilter(&quot;info&quot;.getBytes(), &quot;NAME&quot;.getBytes(), CompareOp.EQUAL, comparator);
+
+    //键值对元数据过滤-----family过滤----字节数组完整匹配
+    FamilyFilter ff = new FamilyFilter(
+            CompareOp.EQUAL , 
+            new BinaryComparator(Bytes.toBytes(&quot;base_info&quot;))   //表中不存在inf列族，过滤结果为空
+            );
+    //键值对元数据过滤-----family过滤----字节数组前缀匹配
+    ff = new FamilyFilter(
+            CompareOp.EQUAL , 
+            new BinaryPrefixComparator(Bytes.toBytes(&quot;inf&quot;))   //表中存在以inf打头的列族info，过滤结果为该列族所有行
+            );
+
+
+   //键值对元数据过滤-----qualifier过滤----字节数组完整匹配
+
+    filter = new QualifierFilter(
+            CompareOp.EQUAL , 
+            new BinaryComparator(Bytes.toBytes(&quot;na&quot;))   //表中不存在na列，过滤结果为空
+            );
+    filter = new QualifierFilter(
+            CompareOp.EQUAL , 
+            new BinaryPrefixComparator(Bytes.toBytes(&quot;na&quot;))   //表中存在以na打头的列name，过滤结果为所有行的该列数据
+            );
+
+    //基于列名(即Qualifier)前缀过滤数据的ColumnPrefixFilter
+    filter = new ColumnPrefixFilter(&quot;na&quot;.getBytes());
+
+    //基于列名(即Qualifier)多个前缀过滤数据的MultipleColumnPrefixFilter
+    byte[][] prefixes = new byte[][] {Bytes.toBytes(&quot;na&quot;), Bytes.toBytes(&quot;me&quot;)};
+    filter = new MultipleColumnPrefixFilter(prefixes);
+
+    //为查询设置过滤条件
+    scan.setFilter(filter);
+
+
+    scan.addFamily(Bytes.toBytes(&quot;base_info&quot;));
+    ResultScanner scanner = table.getScanner(scan);
+    for(Result r : scanner){
+        /**
+        for(KeyValue kv : r.list()){
+            String family = new String(kv.getFamily());
+            System.out.println(family);
+            String qualifier = new String(kv.getQualifier());
+            System.out.println(qualifier);
+            System.out.println(new String(kv.getValue()));
+        }
+        */
+        //直接从result中取到某个特定的value
+        byte[] value = r.getValue(Bytes.toBytes(&quot;base_info&quot;), Bytes.toBytes(&quot;name&quot;));
+        System.out.println(new String(value));
+    }
+    table.close();
+}
+
+
+@Test
+public void testDel() throws Exception{
+    HTable table = new HTable(conf, &quot;user&quot;);
+    Delete del = new Delete(Bytes.toBytes(&quot;rk0001&quot;));
+    del.deleteColumn(Bytes.toBytes(&quot;data&quot;), Bytes.toBytes(&quot;pic&quot;));
+    table.delete(del);
+    table.close();
+}
+
+
+
+
+public static void main(String[] args) throws Exception {
+    Configuration conf = HBaseConfiguration.create();
+   //conf.set(&quot;hbase.zookeeper.quorum&quot;,&quot;hadoop05:2181,hadoop06:2181,hadoop07:2181&quot;);
+        HBaseAdmin admin = new HBaseAdmin(conf);
+
+    TableName tableName = TableName.valueOf(&quot;person_info&quot;);
+    HTableDescriptor td = new HTableDescriptor(tableName);
+    HColumnDescriptor cd = new HColumnDescriptor(&quot;base_info&quot;);
+    cd.setMaxVersions(10);
+    td.addFamily(cd);
+    admin.createTable(td);
+
+    admin.close();
+
+}
+</code></pre><p>}</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/study/" rel="tag"># study</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/28/Hadoop-八-（hive）/" rel="next" title="Hadoop(八)（hive）">
+                <i class="fa fa-chevron-left"></i> Hadoop(八)（hive）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_fav">收藏夹</a>
+<a class="jiathis_button_copy">复制网址</a>
+<a class="jiathis_button_email">邮件</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_qzone">QQ空间</a>
+<a class="jiathis_button_tqq">腾讯微博</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a class="jiathis_button_share">一键分享</a>
+
+<a href="http://www.jiathis.com/share?uid=2140465" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+var jiathis_config={
+  data_track_clickback:true,
+  summary:"",
+  shortUrl:false,
+  hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/uploads/tl.jpeg"
+                alt="小小冰弟" />
+            
+              <p class="site-author-name" itemprop="name">小小冰弟</p>
+              <p class="site-description motion-element" itemprop="description">浮名总是身外物，不着方寸也风流。</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#一、HBase"><span class="nav-number">1.</span> <span class="nav-text">一、HBase</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二、关系型数据库"><span class="nav-number">2.</span> <span class="nav-text">二、关系型数据库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三、Hbase集群"><span class="nav-number">3.</span> <span class="nav-text">三、Hbase集群</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#四、HBase命令行使用"><span class="nav-number">4.</span> <span class="nav-text">四、HBase命令行使用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#五、搭建HBase集群"><span class="nav-number">5.</span> <span class="nav-text">五、搭建HBase集群</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#五、HBase的API操作"><span class="nav-number">6.</span> <span class="nav-text">五、HBase的API操作</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小小冰弟</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
