@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="study," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="一、Storm&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;进行实时的数据处理如实时分析，在线机器学习，持续计算，主要运用于流式计算，例如网上的实时数据要写入数据库，中间需要个处理过程，通常结合消息队列（消息源）和数据库（存储地）一起使用。 &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;">
+<meta name="keywords" content="study">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hadoop(十)(Storm)">
+<meta property="og:url" content="http://yoursite.com/2018/03/29/Hadoop-十-Storm/index.html">
+<meta property="og:site_name" content="墨">
+<meta property="og:description" content="一、Storm&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;进行实时的数据处理如实时分析，在线机器学习，持续计算，主要运用于流式计算，例如网上的实时数据要写入数据库，中间需要个处理过程，通常结合消息队列（消息源）和数据库（存储地）一起使用。 &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-03-29T08:14:19.119Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hadoop(十)(Storm)">
+<meta name="twitter:description" content="一、Storm&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;进行实时的数据处理如实时分析，在线机器学习，持续计算，主要运用于流式计算，例如网上的实时数据要写入数据库，中间需要个处理过程，通常结合消息队列（消息源）和数据库（存储地）一起使用。 &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  (function(){
+        if(''){
+            if (prompt('请输入文章密码') !== ''){
+                alert('密码错误！');
+                history.back();
+            }
+        }
+    })();
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/03/29/Hadoop-十-Storm/"/>
+
+
+
+
+
+  <title>Hadoop(十)(Storm) | 墨</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<div id="hexo-helper-live2d">
+  <canvas id="live2dcanvas" width="400" height="600"></canvas>
+</div>
+<style>
+  #live2dcanvas{
+    position: fixed;
+    width: 400px;
+    height: 600px;
+    opacity:0.7;
+    right: 0px;
+    z-index: 999;
+    pointer-events: none;
+    bottom: -20px;
+  }
+</style>
+<script type="text/javascript" src="/live2d/device.min.js"></script>
+<script type="text/javascript">
+const loadScript = function loadScript(c,b){var a=document.createElement("script");a.type="text/javascript";"undefined"!=typeof b&&(a.readyState?a.onreadystatechange=function(){if("loaded"==a.readyState||"complete"==a.readyState)a.onreadystatechange=null,b()}:a.onload=function(){b()});a.src=c;document.body.appendChild(a)};
+(function(){
+  if((typeof(device) != 'undefined') && (device.mobile())){
+    var trElement = document.getElementById('hexo-helper-live2d');
+    trElement.parentNode.removeChild(trElement);
+    return;
+  }else
+    if (typeof(device) === 'undefined') console.error('Cannot find current-device script.');
+  loadScript("/live2d/script.js", function(){loadlive2d("live2dcanvas", "/live2d/assets/shizuku.model.json", 0.5);});
+})();
+</script>
+
+<script type="text/javascript">
+/* 鼠标特效 */
+var a_idx = 0;
+jQuery(document).ready(function($) {
+    $("body").click(function(e) {
+        var a = new Array("富强", "民主", "文明", "和谐", "自由", "平等", "公正" ,"法治", "爱国", "敬业", "诚信", "友善");
+        var $i = $("<span/>").text(a[a_idx]);
+        a_idx = (a_idx + 1) % a.length;
+        var x = e.pageX,
+        y = e.pageY;
+        $i.css({
+            "z-index": 999999999999999999999999999999999999999999999999999999999999999999999,
+            "top": y - 20,
+            "left": x,
+            "position": "absolute",
+            "font-weight": "bold",
+            "color": "#ff6651"
+        });
+        $("body").append($i);
+        $i.animate({
+            "top": y - 180,
+            "opacity": 0
+        },
+        1500,
+        function() {
+            $i.remove();
+        });
+    });
+});
+</script>
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+	<a href="https://github.com/xxbd" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">墨</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-neggings">
+          <a href="/neggings" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            neggings
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/03/29/Hadoop-十-Storm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="小小冰弟">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/tl.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Hadoop(十)(Storm)</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-29T14:57:18+08:00">
+                2018-03-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Hadoop/" itemprop="url" rel="index">
+                    <span itemprop="name">Hadoop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="一、Storm"><a href="#一、Storm" class="headerlink" title="一、Storm"></a>一、Storm</h4><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;进行实时的数据处理如实时分析，在线机器学习，持续计算，主要运用于流式计算，例如网上的实时数据要写入数据库，中间需要个处理过程，通常结合消息队列（消息源）和数据库（存储地）一起使用。</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在Storm集群中真正运行topology的主要有三个实体：工作进程、线程和任务。Storm集群中的每台机器上都可以运行多个工作进程，每个 工作进程又可创建多个线程，每个线程可以执行多个任务，任务是真正进行数据处理的实体，我们开发的spout、bolt就是作为一个或者多个任务的方式执 行的。</p>
+<p>因此，计算任务在多个线程、进程和服务器之间并行进行，支持灵活的水平扩展。</p>
+<h4 id="二、Storm基本组件"><a href="#二、Storm基本组件" class="headerlink" title="二、Storm基本组件"></a>二、Storm基本组件</h4><h5 id="1、Topologies-：-拓扑，也俗称一个任务（与Hadoop的MapReduce-job不同，不会终止）"><a href="#1、Topologies-：-拓扑，也俗称一个任务（与Hadoop的MapReduce-job不同，不会终止）" class="headerlink" title="1、Topologies ： 拓扑，也俗称一个任务（与Hadoop的MapReduce job不同，不会终止）"></a>1、Topologies ： 拓扑，也俗称一个任务（与Hadoop的MapReduce job不同，不会终止）</h5><p> 一个topology是spouts和bolts组成的图， 通过stream groupings将图中的spouts和bolts连接起来。</p>
+<h6 id="Topology运行机制"><a href="#Topology运行机制" class="headerlink" title="Topology运行机制"></a>Topology运行机制</h6><p><strong>(1)Storm提交后，会把代码首先存放到Nimbus节点的inbox目录下，之后，会把当前Storm运行的配置生成一个stormconf.ser文件放到Nimbus节点的stormdist目录中，在此目录中同时还有序列化之后的Topology代码文件；</strong></p>
+<p><strong>(2)在设定Topology所关联的Spouts和Bolts时，可以同时设置当前Spout和Bolt的executor数目和task数目，默认情况下，一个Topology的task的总和是和executor的总和一致的。之后，系统根据worker的数目，尽量平均的分配这些task的执行。worker在哪个supervisor节点上运行是由storm本身决定的；</strong></p>
+<p><strong>(3)任务分配好之后，Nimbes节点会将任务的信息提交到zookeeper集群，同时在zookeeper集群中会有workerbeats节点，这里存储了当前Topology的所有worker进程的心跳信息；</strong></p>
+<p><strong>(4)Supervisor节点会不断的轮询zookeeper集群，在zookeeper的assignments节点中保存了所有Topology的任务分配信息、代码存储目录、任务之间的关联关系等，Supervisor通过轮询此节点的内容，来领取自己的任务，启动worker进程运行；</strong></p>
+<p><strong>(5)一个Topology运行之后，就会不断的通过Spouts来发送Stream流，通过Bolts来不断的处理接收到的Stream流，Stream流是无界的。</strong></p>
+<p><strong>最后一步会不间断的执行，除非手动结束Topology。</strong></p>
+<h5 id="2、Spouts-：-拓扑的消息源"><a href="#2、Spouts-：-拓扑的消息源" class="headerlink" title="2、Spouts ： 拓扑的消息源"></a>2、Spouts ： 拓扑的消息源</h5><p>消息源spout是Storm里面一个topology里面的消息生产者；</p>
+<p>Spouts可以是可靠的也可以是不可靠的：如果这个tuple没有被storm成功处理，可靠的消息源spouts可以重新发射一个tuple， 但是不可靠的消息源spouts一旦发出一个tuple就不能重发了；</p>
+<p>消息源可以发射多条消息流stream：使用OutputFieldsDeclarer.declareStream来定义多个stream， 然后使用SpoutOutputCollector来发射指定的stream。</p>
+<h5 id="3、Bolts-：-拓扑的处理逻辑单元"><a href="#3、Bolts-：-拓扑的处理逻辑单元" class="headerlink" title="3、Bolts ： 拓扑的处理逻辑单元"></a>3、Bolts ： 拓扑的处理逻辑单元</h5><p>所有的消息处理逻辑被封装在bolts里面；</p>
+<p>Bolts可以做很多事情：过滤，聚合，查询数据库等等。</p>
+<p>Bolts可以简单的做消息流的传递，也可以通过多级Bolts的组合来完成复杂的消息流处理；比如求TopN、聚合操作等（如果要把这个过程做得更具有扩展性那么可能需要更多的步骤）。</p>
+<p>Bolts可以发射多条消息流：<br>     使用OutputFieldsDeclarer.declareStream定义stream；<br>     使用OutputCollector.emit来选择要发射的stream；</p>
+<p>Bolts的主要方法是execute,：<br>     它以一个tuple作为输入，使用OutputCollector来发射tuple；<br>     通过调用OutputCollector的ack方法，以通知这个tuple的发射者spout；</p>
+<p>Bolts一般的流程：<br>     处理一个输入tuple,  发射0个或者多个tuple, 然后调用ack通知storm自己已经处理过这个tuple了；<br>    storm提供了一个IBasicBolt会自动调用ack。</p>
+<h5 id="4、tuple：消息元组-用来固定消息的传递格式，几个字符串啊等等"><a href="#4、tuple：消息元组-用来固定消息的传递格式，几个字符串啊等等" class="headerlink" title="4、tuple：消息元组(用来固定消息的传递格式，几个字符串啊等等)"></a>4、tuple：消息元组(用来固定消息的传递格式，几个字符串啊等等)</h5><h5 id="5、Streams-：-流"><a href="#5、Streams-：-流" class="headerlink" title="5、Streams ： 流"></a>5、Streams ： 流</h5><p>消息流stream是storm里的关键抽象；<br>一个消息流是一个没有边界的tuple序列， 而这些tuple序列会以一种分布式的方式并行地创建和处理；<br>通过对stream中tuple序列中每个字段命名来定义stream；<br>在默认的情况下，tuple的字段类型可以是：integer，long，short， byte，string，double，float，boolean和byte array；<br>可以自定义类型（只要实现相应的序列化器）。</p>
+<h5 id="6、Stream-groupings-：流的分组策略"><a href="#6、Stream-groupings-：流的分组策略" class="headerlink" title="6、Stream groupings ：流的分组策略"></a>6、Stream groupings ：流的分组策略</h5><p>定义一个topology的关键一步是定义每个bolt接收什么样的流作为输入；</p>
+<p>stream grouping就是用来定义一个stream应该如何分配数据给bolts；</p>
+<p>Storm里面有7种类型的stream grouping：<br>Shuffle Grouping——随机分组， 随机派发stream里面的tuple，保证每个bolt接收到的tuple数目大致相同；<br>Fields Grouping——按字段分组， 比如按userid来分组， 具有同样userid的tuple会被分到相同的Bolts里的一个task， 而不同的userid则会被分配到不同的bolts里的task；</p>
+<p>All Grouping——广播发送，对于每一个tuple，所有的bolts都会收到；</p>
+<p>Global Grouping——全局分组， 这个tuple被分配到storm中的一个bolt的其中一个task。再具体一点就是分配给id值最低的那个task；</p>
+<p>Non Grouping——不分组，这个分组的意思是说stream不关心到底谁会收到它的tuple。目前这种分组和Shuffle grouping是一样的效果， 有一点不同的是storm会把这个bolt放到这个bolt的订阅者同一个线程里面去执行；</p>
+<p>Direct Grouping——直接分组， 这是一种比较特别的分组方法，用这种分组意味着消息的发送者指定由消息接收者的哪个task处理这个消息。 只有被声明为Direct Stream的消息流可以声明这种分组方法。而且这种消息tuple必须使用emitDirect方法来发射。<br>消息处理者可以通过TopologyContext来获取处理它的消息的task的id （OutputCollector.emit方法也会返回task的id）；</p>
+<p>Local or shuffle grouping——如果目标bolt有一个或者多个task在同一个工作进程中，tuple将会被随机发生给这些tasks。否则，和普通的Shuffle Grouping行为一致。</p>
+<h5 id="7、Tasks-：-任务处理单元"><a href="#7、Tasks-：-任务处理单元" class="headerlink" title="7、Tasks ： 任务处理单元"></a>7、Tasks ： 任务处理单元</h5><p>每一个spout和bolt会被当作很多task在整个集群里执行</p>
+<p>每一个executor对应到一个线程，在这个线程上运行多个task</p>
+<p>stream grouping则是定义怎么从一堆task发射tuple到另外一堆task</p>
+<p>可以调用TopologyBuilder类的setSpout和setBolt来设置并行度（也就是有多少个task）</p>
+<h5 id="8、Executor-工作线程"><a href="#8、Executor-工作线程" class="headerlink" title="8、Executor :工作线程"></a>8、Executor :工作线程</h5><h5 id="9、Workers-：工作进程"><a href="#9、Workers-：工作进程" class="headerlink" title="9、Workers ：工作进程"></a>9、Workers ：工作进程</h5><p> 一个topology可能会在一个或者多个worker（工作进程）里面执行；</p>
+<p>每个worker是一个物理JVM并且执行整个topology的一部分；</p>
+<p>比如，对于并行度是300的topology来说，如果我们使用50个工作进程来执行，那么每个工作进程会处理其中的6个tasks；<br>Storm会尽量均匀的工作分配给所有的worker；</p>
+<h5 id="10、Configuration-：-topology的配置"><a href="#10、Configuration-：-topology的配置" class="headerlink" title="10、Configuration ： topology的配置"></a>10、Configuration ： topology的配置</h5><h4 id="三、Storm集群管理架构"><a href="#三、Storm集群管理架构" class="headerlink" title="三、Storm集群管理架构"></a>三、Storm集群管理架构</h4><p>主要分为两部分：</p>
+<ol>
+<li>Nimbus  负责协调管理</li>
+<li>Supervisor 负责具体运算</li>
+</ol>
+<p>具体配置：</p>
+<h6 id="1、安装一个zookeeper集群"><a href="#1、安装一个zookeeper集群" class="headerlink" title="1、安装一个zookeeper集群"></a>1、安装一个zookeeper集群</h6><h6 id="2、上传storm的安装包，解压"><a href="#2、上传storm的安装包，解压" class="headerlink" title="2、上传storm的安装包，解压"></a>2、上传storm的安装包，解压</h6><h6 id="3、修改配置文件storm-yaml"><a href="#3、修改配置文件storm-yaml" class="headerlink" title="3、修改配置文件storm.yaml"></a>3、修改配置文件storm.yaml</h6><pre><code>#所使用的zookeeper集群主机
+storm.zookeeper.servers:
+     - &quot;hadoop01&quot;
+     - &quot;hadoop02&quot;
+     - &quot;hadoop03&quot;
+
+#nimbus所在的主机名
+nimbus.host: &quot;hadoop01&quot;
+</code></pre><h6 id="4-占用的端口"><a href="#4-占用的端口" class="headerlink" title="4.占用的端口"></a>4.占用的端口</h6><pre><code>supervisor.slots.ports
+-6701
+-6702
+-6703
+-6704
+-6705
+</code></pre><h6 id="5-启动storm"><a href="#5-启动storm" class="headerlink" title="5.启动storm"></a>5.启动storm</h6><pre><code>在nimbus主机上
+nohup ./storm nimbus
+nohup ./storm ui （开启后便可以访问可视化页面管理，端口号8080）
+
+在supervisor主机上
+nohup ./storm supervisor 
+</code></pre><p><strong>注意事项：<br>启动Storm后台进程时，需要对conf/storm.yaml配置文件中设置的storm.local.dir目录具有写权限。<br>storm后台进程被启动后，将在Storm安装部署目录下的logs/子目录下生成各个进程的日志文件。<br>经测试，Storm UI必须和Storm Nimbus部署在同一台机器上，否则UI无法正常工作，因为UI进程会检查本机是否存在Nimbus链接。<br>为了方便使用，可以将bin/storm加入到系统环境变量中。<br>至此，Storm集群已经部署、配置完毕，可以向集群提交拓扑运行了。</strong></p>
+<pre><code>提交Topologies
+命令格式：storm jar 【jar路径】 【拓扑包名.拓扑类名】【stormIP地址】【storm端口】【拓扑名称】【参    数】
+eg：storm jar /home/storm/storm-starter.jar storm.starter.WordCountTopology wordcountTop;
+#提交storm-starter.jar到远程集群，并启动wordcountTop拓扑。
+
+停止Topologies
+查看当前运行的topo： storm list 
+命令格式：storm kill 【拓扑名称】
+样例：storm kill wordcountTop#     
+杀掉wordcountTop拓扑。
+</code></pre><h4 id="四、Storm的JAVA开发"><a href="#四、Storm的JAVA开发" class="headerlink" title="四、Storm的JAVA开发"></a>四、Storm的JAVA开发</h4><h5 id="1-编写Spout"><a href="#1-编写Spout" class="headerlink" title="1.编写Spout"></a>1.编写Spout</h5><pre><code>package cn.itcast.stormdemo;
+
+import java.util.Map;
+import java.util.Random;
+
+import backtype.storm.spout.SpoutOutputCollector;
+import backtype.storm.task.TopologyContext;
+import backtype.storm.topology.OutputFieldsDeclarer;
+import backtype.storm.topology.base.BaseRichSpout;
+import backtype.storm.tuple.Fields;
+import backtype.storm.tuple.Values;
+import backtype.storm.utils.Utils;
+
+public class RandomWordSpout extends BaseRichSpout{
+
+private SpoutOutputCollector collector;
+
+//模拟一些数据
+String[] words = {&quot;iphone&quot;,&quot;xiaomi&quot;,&quot;mate&quot;,&quot;sony&quot;,&quot;sumsung&quot;,&quot;moto&quot;,&quot;meizu&quot;};
+
+//不断地往下一个组件发送tuple消息
+//这里面是该spout组件的核心逻辑
+@Override
+public void nextTuple() {
+
+    //可以从kafka消息队列中拿到数据,简便起见，我们从words数组中随机挑选一个商品名发送出去
+    Random random = new Random();
+    int index = random.nextInt(words.length);()保证不超过数组的大小
+
+    //通过随机数拿到一个商品名
+    String godName = words[index];
+
+
+    //将商品名封装成tuple，发送消息给下一个组件（这里可以传进去一个数组，但之后的声明便也需要一一对应）
+    collector.emit(new Values(godName));
+
+    //每发送一个消息，休眠500ms
+    Utils.sleep(500);
+
+
+}
+
+//初始化方法，在spout组件实例化时调用一次
+@Override
+public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
+
+    this.collector = collector;
+
+
+}
+
+//声明本spout组件发送出去的tuple中的数据的字段名
+@Override
+public void declareOutputFields(OutputFieldsDeclarer declarer) {
+
+    declarer.declare(new Fields(&quot;orignname&quot;));（
+
+}
+
+}
+</code></pre><h5 id="2-编写转换大小写的Bolt"><a href="#2-编写转换大小写的Bolt" class="headerlink" title="2.编写转换大小写的Bolt"></a>2.编写转换大小写的Bolt</h5><pre><code>public class UpperBolt extends BaseBasicBolt{
+
+
+//业务处理逻辑
+@Override
+public void execute(Tuple tuple, BasicOutputCollector collector) {
+
+    //先获取到上一个组件传递过来的数据,数据在tuple里面
+    String godName = tuple.getString(0);
+
+    //将商品名转换成大写
+    String godName_upper = godName.toUpperCase();
+
+    //将转换完成的商品名发送出去
+    collector.emit(new Values(godName_upper));
+
+}
+
+
+
+//声明该bolt组件要发出去的tuple的字段
+@Override
+public void declareOutputFields(OutputFieldsDeclarer declarer) {
+
+    declarer.declare(new Fields(&quot;uppername&quot;));
+}
+
+}
+</code></pre><h5 id="3-编写添加后缀的Bolt"><a href="#3-编写添加后缀的Bolt" class="headerlink" title="3.编写添加后缀的Bolt"></a>3.编写添加后缀的Bolt</h5><pre><code>public class SuffixBolt extends BaseBasicBolt{
+
+FileWriter fileWriter = null;
+
+
+//在bolt组件运行过程中只会被调用一次，因为这是最后一个bolt,分布式有很多个进程以此来区分
+@Override
+public void prepare(Map stormConf, TopologyContext context) {
+
+    try {
+        fileWriter = new FileWriter(&quot;/home/hadoop/stormoutput/&quot;+UUID.randomUUID());
+    } catch (IOException e) {
+        throw new RuntimeException(e);
+    }
+
+}
+
+
+
+//该bolt组件的核心处理逻辑
+//每收到一个tuple消息，就会被调用一次
+@Override
+public void execute(Tuple tuple, BasicOutputCollector collector) {
+
+    //先拿到上一个组件发送过来的商品名称
+    String upper_name = tuple.getString(0);
+    String suffix_name = upper_name + &quot;_itisok&quot;;
+
+
+    //为上一个组件发送过来的商品名称添加后缀
+
+    try {
+        fileWriter.write(suffix_name);
+        fileWriter.write(&quot;\n&quot;);
+        fileWriter.flush();
+
+    } catch (IOException e) {
+        throw new RuntimeException(e);
+    }
+
+
+
+}
+
+
+
+
+//本bolt已经不需要发送tuple消息到下一个组件，所以不需要再声明tuple的字段
+@Override
+public void declareOutputFields(OutputFieldsDeclarer arg0) {
+
+
+}
+
+}
+</code></pre><h5 id="4-主程序编写"><a href="#4-主程序编写" class="headerlink" title="4.主程序编写"></a>4.主程序编写</h5><ul>
+<li>组织各个处理组件形成一个完整的处理流程，就是所谓的topology(类似于mapreduce程序中的job)</li>
+<li>并且将该topology提交给storm集群去运行，topology提交到集群后就将永无休止地运行，除非人为或者异常退出</li>
+<li>@author duanhaitao@itcast.cn</li>
+</ul>
+<pre><code>public class TopoMain {
+
+
+public static void main(String[] args) throws Exception {
+
+    TopologyBuilder builder = new TopologyBuilder();
+
+    //将我们的spout组件设置到topology中去，并且取名为randomSpout  
+    //parallelism_hint ：4  表示用4个excutor来执行这个组件
+    //setNumTasks(8) 设置的是该组件执行时的并发task数量，也就意味着1个excutor会运行2个task
+    builder.setSpout(&quot;randomspout&quot;, new RandomWordSpout(), 4).setNumTasks(8);
+
+    //将大写转换bolt组件设置到topology，并且指定它接收randomspout组件的消息
+    //.shuffleGrouping(&quot;randomspout&quot;)包含两层含义：
+    //1、upperbolt组件接收的tuple消息一定来自于randomspout组件
+    //2、randomspout组件和upperbolt组件的大量并发task实例之间收发消息时采用的分组策略是随机分组shuffleGrouping
+    builder.setBolt(&quot;upperbolt&quot;, new UpperBolt(), 4).shuffleGrouping(&quot;randomspout&quot;);
+
+    //将添加后缀的bolt组件设置到topology，并且指定它接收upperbolt组件的消息
+    builder.setBolt(&quot;suffixbolt&quot;, new SuffixBolt(), 4).shuffleGrouping(&quot;upperbolt&quot;);
+
+    //用builder来创建一个topology
+    StormTopology demotop = builder.createTopology();
+
+
+    //配置一些topology在集群中运行时的参数
+    Config conf = new Config();
+    //这里设置的是整个demotop所占用的槽位数，也就是worker的数量
+    conf.setNumWorkers(4);
+    conf.setDebug(true);
+    conf.setNumAckers(0);
+
+
+    //将这个topology提交给storm集群运行,名字叫demotopo
+    StormSubmitter.submitTopology(&quot;demotopo&quot;, conf, demotop);
+
+}
+</code></pre><p>   }</p>
+<h5 id="5-运行程序"><a href="#5-运行程序" class="headerlink" title="5.运行程序"></a>5.运行程序</h5>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/study/" rel="tag"># study</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/28/Hadoop-九-（HBase）/" rel="next" title="Hadoop(九)（HBase）">
+                <i class="fa fa-chevron-left"></i> Hadoop(九)（HBase）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_fav">收藏夹</a>
+<a class="jiathis_button_copy">复制网址</a>
+<a class="jiathis_button_email">邮件</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_qzone">QQ空间</a>
+<a class="jiathis_button_tqq">腾讯微博</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a class="jiathis_button_share">一键分享</a>
+
+<a href="http://www.jiathis.com/share?uid=2140465" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+var jiathis_config={
+  data_track_clickback:true,
+  summary:"",
+  shortUrl:false,
+  hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/uploads/tl.jpeg"
+                alt="小小冰弟" />
+            
+              <p class="site-author-name" itemprop="name">小小冰弟</p>
+              <p class="site-description motion-element" itemprop="description">浮名总是身外物，不着方寸也风流。</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#一、Storm"><span class="nav-number">1.</span> <span class="nav-text">一、Storm</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二、Storm基本组件"><span class="nav-number">2.</span> <span class="nav-text">二、Storm基本组件</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1、Topologies-：-拓扑，也俗称一个任务（与Hadoop的MapReduce-job不同，不会终止）"><span class="nav-number">2.1.</span> <span class="nav-text">1、Topologies ： 拓扑，也俗称一个任务（与Hadoop的MapReduce job不同，不会终止）</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#Topology运行机制"><span class="nav-number">2.1.1.</span> <span class="nav-text">Topology运行机制</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2、Spouts-：-拓扑的消息源"><span class="nav-number">2.2.</span> <span class="nav-text">2、Spouts ： 拓扑的消息源</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3、Bolts-：-拓扑的处理逻辑单元"><span class="nav-number">2.3.</span> <span class="nav-text">3、Bolts ： 拓扑的处理逻辑单元</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4、tuple：消息元组-用来固定消息的传递格式，几个字符串啊等等"><span class="nav-number">2.4.</span> <span class="nav-text">4、tuple：消息元组(用来固定消息的传递格式，几个字符串啊等等)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#5、Streams-：-流"><span class="nav-number">2.5.</span> <span class="nav-text">5、Streams ： 流</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#6、Stream-groupings-：流的分组策略"><span class="nav-number">2.6.</span> <span class="nav-text">6、Stream groupings ：流的分组策略</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#7、Tasks-：-任务处理单元"><span class="nav-number">2.7.</span> <span class="nav-text">7、Tasks ： 任务处理单元</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#8、Executor-工作线程"><span class="nav-number">2.8.</span> <span class="nav-text">8、Executor :工作线程</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#9、Workers-：工作进程"><span class="nav-number">2.9.</span> <span class="nav-text">9、Workers ：工作进程</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#10、Configuration-：-topology的配置"><span class="nav-number">2.10.</span> <span class="nav-text">10、Configuration ： topology的配置</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三、Storm集群管理架构"><span class="nav-number">3.</span> <span class="nav-text">三、Storm集群管理架构</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#1、安装一个zookeeper集群"><span class="nav-number">3.0.1.</span> <span class="nav-text">1、安装一个zookeeper集群</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2、上传storm的安装包，解压"><span class="nav-number">3.0.2.</span> <span class="nav-text">2、上传storm的安装包，解压</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#3、修改配置文件storm-yaml"><span class="nav-number">3.0.3.</span> <span class="nav-text">3、修改配置文件storm.yaml</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#4-占用的端口"><span class="nav-number">3.0.4.</span> <span class="nav-text">4.占用的端口</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#5-启动storm"><span class="nav-number">3.0.5.</span> <span class="nav-text">5.启动storm</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#四、Storm的JAVA开发"><span class="nav-number">4.</span> <span class="nav-text">四、Storm的JAVA开发</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-编写Spout"><span class="nav-number">4.1.</span> <span class="nav-text">1.编写Spout</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-编写转换大小写的Bolt"><span class="nav-number">4.2.</span> <span class="nav-text">2.编写转换大小写的Bolt</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-编写添加后缀的Bolt"><span class="nav-number">4.3.</span> <span class="nav-text">3.编写添加后缀的Bolt</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-主程序编写"><span class="nav-number">4.4.</span> <span class="nav-text">4.主程序编写</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#5-运行程序"><span class="nav-number">4.5.</span> <span class="nav-text">5.运行程序</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小小冰弟</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
