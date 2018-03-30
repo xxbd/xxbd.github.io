@@ -68,4 +68,12 @@ _只用一个 * 号包含的就是斜体_
          
 ***
 
+##### 居中，左右对齐
+居中：center标签
+<center>诶嘿</center>
+左对齐：P标签，加上 align = "left"
+<p align="left">诶嘿</p>
+右对齐：P标签，加上 align = "right"
+<p align="right">诶嘿</p>
+
 ##### [Markdown语法与快捷键](http://blog.csdn.net/wolinghuanyun/article/details/52454751)
