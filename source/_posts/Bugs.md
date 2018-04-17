@@ -27,3 +27,7 @@ Consider defining a bean of type 'org.springframework.web.client.RestTemplate' i
 	public RestTemplate restTemplate(){
 		return new RestTemplate();
 	}
+
+###### 4.java.util.concurrent.ExecutionException: org.apache.catalina.LifecycleException: Failed to start component [StandardEngine[Tomcat].StandardHost[localhost].TomcatEmbeddedContext[]]
+
+###### SpringBoot启动报错，原因重点应该是放在冲突上面，我出现错误原因是在测试SpringCloud时候,parent已经加载了spring-boot-starter-web的包，然后我使用eureka server项目时候需要spring-cloud-starter-eureka-server，他们俩冲突导致此问题。
