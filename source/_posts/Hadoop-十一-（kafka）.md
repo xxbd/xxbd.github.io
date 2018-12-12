@@ -1,10 +1,10 @@
 title: Hadoop(十一)（kafka）
 author: 小小冰弟
-date: 2018-03-29 17:25:29
 tags: study
 categories: Hadoop
+date: 2018-03-29 17:25:29
 ---
-#### 一What is the Kafka?
+#### 一、What is the Kafka?
 ###### 1/kafka是一个分布式的消息缓存系统
 ###### 2/kafka集群中的服务器都叫做broker
 ###### 3/kafka有两类客户端，一类叫producer（消息生产者），一类叫做consumer（消息消费者），客户端和broker服务器之间采用tcp协议连接
@@ -164,8 +164,3 @@ bin/kafka-topics.sh --describe --zookeeper hadoop01:2181 --topic order
 		}
 	}
 }
- 
-    
-    
-    
-
